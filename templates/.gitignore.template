@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment / secrets (defense in depth — no secrets should ever be committed)
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+id_ed25519
+*.pkcs12
+
+# Backup files
+*.bak
+*.orig

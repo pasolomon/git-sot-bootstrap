@@ -1,0 +1,53 @@
+# {{REPO_NAME}}
+
+Source of truth for **{{REPO_NAME}}**. Bootstrapped by [git-sot-bootstrap](https://github.com/{{GH_ACCOUNT}}/git-sot-bootstrap).
+
+## Architecture
+
+```
+                  ┌─────────────────────────────────┐
+                  │  GitHub (private/public repo)   │  ← source of truth
+                  │  {{GH_ACCOUNT}}/{{REPO_NAME}}
+                  └──────────┬──────────────────────┘
+                             │
+                push ↑       │       ↓ pull
+                             │
+            ┌────────────────┴────────────────┐
+            │                                 │
+            ▼                                 ▼
+  ┌──────────────────┐            ┌──────────────────────┐
+  │  Mac working     │            │  Server fallback     │
+  │  clone           │            │  clone (pull-only)   │
+  │  {{MAC_CLONE_PATH}}      │  {{SERVER_CLONE_PATH}}
+  └──────────────────┘            └──────────────────────┘
+```
+
+- **GitHub** is authoritative.
+- **Mac clone** is the working copy. Edits happen here.
+- **Server clone** is **pull-only**, accessed via repo-scoped deploy key (alias `{{SSH_ALIAS}}`). Never commit from the server.
+
+## Workflow
+
+### Editing
+1. Edit files on Mac (`{{MAC_CLONE_PATH}}`).
+2. `git add` → `git commit` → `git push`.
+3. On server: `cd {{SERVER_CLONE_PATH}} && git pull`.
+
+### What lives here
+
+Add files relevant to **{{REPO_NAME}}**. Common patterns:
+- State / configuration files
+- Runbooks and procedures
+- Changelog of changes
+- Any other canonical documentation
+
+## Server access
+
+- Host: `{{SERVER_USER}}@{{SERVER_HOST}}`
+- SSH alias for git: `{{SSH_ALIAS}}` (mapped to a repo-scoped read-only deploy key in `~/.ssh/config`)
+
+## Why git instead of plain files
+
+- Full version history with diffs
+- Backup that survives server filesystem corruption
+- Clean offline fallback (the server clone) when needed
