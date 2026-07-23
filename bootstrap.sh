@@ -720,7 +720,7 @@ validate_one() {
   local rp="$1" name dirty ab remote tmpl_missing="" f
   name=$(basename "$rp")
   remote=$(git -C "$rp" remote get-url origin 2>/dev/null || echo "NONE")
-  dirty=$(git -C "$rp" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  dirty=$({ git -C "$rp" status --porcelain 2>/dev/null || true; } | wc -l | tr -d ' ')
   ab=$(git -C "$rp" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null | tr '\t' '/' || echo "no-upstream")
   for f in .cowork/project.yaml README.md COWORK.md SESSION_STATE.md DECISIONS.md \
            ASSET_INDEX.md TOOL_MANIFEST.md CHANGELOG.md RECOVERY.md .gitattributes; do
@@ -745,8 +745,12 @@ cmd_validate() {
     echo "|---|---|---|---|---|---|---|---|"
   } > "$report"
   if [ -n "$REPO_NAME" ] && [ "$ALL" -ne 1 ]; then
-    local lp; lp=$(local_path_for "$REPO_NAME")
-    [ -d "$lp/.git" ] || lp=$(find "$PROJECT_ROOT" -maxdepth 4 -type d -name "$REPO_NAME" | head -1)
+    local lp key
+    key=$(printf '%s' "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
+    lp=$(registry_get "$key" local_path); lp="${lp/#\~/$HOME}"
+    [ -n "$lp" ] && [ -d "$lp" ] || lp=$(local_path_for "$REPO_NAME")
+    [ -d "$lp/.git" ] || lp=$(find "$PROJECT_ROOT" -maxdepth 4 -type d -name "$REPO_NAME" 2>/dev/null | head -1)
+    [ -n "$lp" ] && [ -d "$lp" ] || die "validate: cannot locate local project for $REPO_NAME"
     validate_one "$lp" >> "$report"
   else
     find "$PROJECT_ROOT" -maxdepth 4 -name .git -type d 2>/dev/null | sort | while read -r g; do
