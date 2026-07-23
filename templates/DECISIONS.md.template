@@ -1,0 +1,16 @@
+# DECISIONS — {{REPO_NAME}}
+
+_Append-only log of decisions and why they were made. Newest first._
+
+## {{DATE}} — Adopted into the Cowork project system
+
+- Structure standardized by git-sot-bootstrap v{{VERSION}}; GitHub
+  ({{GH_ACCOUNT}}/{{REPO_NAME}}) is the durable source of truth.
+- New binary files use Git LFS going forward; existing history untouched.
+
+<!-- Template for new entries:
+## YYYY-MM-DD — Short title
+- What was decided
+- Why (alternatives considered, who approved)
+- What it supersedes
+-->

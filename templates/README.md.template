@@ -1,53 +1,36 @@
 # {{REPO_NAME}}
 
-Source of truth for **{{REPO_NAME}}**. Bootstrapped by [git-sot-bootstrap](https://github.com/{{GH_ACCOUNT}}/git-sot-bootstrap).
+Source of truth: **github.com/{{GH_ACCOUNT}}/{{REPO_NAME}}** ({{VISIBILITY}}).
+Working clone: `{{LOCAL_PATH}}` · Server fallback (pull-only): `{{SERVER_CLONE_PATH}}`
 
-## Architecture
+> Managed by the Cowork project system (git-sot-bootstrap v{{VERSION}}).
+> Claude: read `COWORK.md` before doing anything in this project.
 
-```
-                  ┌─────────────────────────────────┐
-                  │  GitHub (private/public repo)   │  ← source of truth
-                  │  {{GH_ACCOUNT}}/{{REPO_NAME}}
-                  └──────────┬──────────────────────┘
-                             │
-                push ↑       │       ↓ pull
-                             │
-            ┌────────────────┴────────────────┐
-            │                                 │
-            ▼                                 ▼
-  ┌──────────────────┐            ┌──────────────────────┐
-  │  Mac working     │            │  Server fallback     │
-  │  clone           │            │  clone (pull-only)   │
-  │  {{MAC_CLONE_PATH}}      │  {{SERVER_CLONE_PATH}}
-  └──────────────────┘            └──────────────────────┘
-```
+## What this project is
 
-- **GitHub** is authoritative.
-- **Mac clone** is the working copy. Edits happen here.
-- **Server clone** is **pull-only**, accessed via repo-scoped deploy key (alias `{{SSH_ALIAS}}`). Never commit from the server.
+_Describe the project here._
 
-## Workflow
+## Layout
 
-### Editing
-1. Edit files on Mac (`{{MAC_CLONE_PATH}}`).
-2. `git add` → `git commit` → `git push`.
-3. On server: `cd {{SERVER_CLONE_PATH}} && git pull`.
-
-### What lives here
-
-Add files relevant to **{{REPO_NAME}}**. Common patterns:
-- State / configuration files
-- Runbooks and procedures
-- Changelog of changes
-- Any other canonical documentation
-
-## Server access
-
-- Host: `{{SERVER_USER}}@{{SERVER_HOST}}`
-- SSH alias for git: `{{SSH_ALIAS}}` (mapped to a repo-scoped read-only deploy key in `~/.ssh/config`)
-
-## Why git instead of plain files
-
-- Full version history with diffs
-- Backup that survives server filesystem corruption
-- Clean offline fallback (the server clone) when needed
+| Path | Purpose |
+|---|---|
+| `.cowork/project.yaml` | Machine-readable project identity |
+| `COWORK.md` | Session discipline for Claude Cowork |
+| `SESSION_STATE.md` | Exact current state — read first, update at close |
+| `DECISIONS.md` | Decision log (why things are the way they are) |
+| `ASSET_INDEX.md` | Index of assets with hashes and provenance |
+| `TOOL_MANIFEST.md` | Tools/apps/credentials this project depends on |
+| `CHANGELOG.md` | Human-readable change history |
+| `RECOVERY.md` | How to restore this project on a new machine |
+| `sessions/` | One record per working session |
+| `assets/source` | Original client/source material (never edit in place) |
+| `assets/reference` | Reference imagery and research |
+| `assets/brand` | Brand assets (logos, palettes, type) |
+| `assets/linked` | Assets linked from Adobe documents — do not move without relinking |
+| `assets/fonts` | Fonts (license-checked only) |
+| `working/` | Active working files (.ai/.psd/.indd masters) |
+| `exports/proofs` | Proofs sent for review |
+| `exports/approved` | Client-approved exports |
+| `production/` | Print/production-ready files |
+| `archive/` | Superseded but meaningful versions |
+| `quarantine/` | Uncertain files pending human review |

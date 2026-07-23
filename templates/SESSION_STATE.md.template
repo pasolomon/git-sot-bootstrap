@@ -1,0 +1,23 @@
+# SESSION_STATE — {{REPO_NAME}}
+
+_Last updated: {{DATE}} · Update this file at the end of every session._
+
+## Current state
+
+- Project scaffolding installed by git-sot-bootstrap v{{VERSION}} on {{DATE}}.
+- _(Describe the real current state here: what is finished, what is mid-flight,
+  what file is the current master, what the client last saw.)_
+
+## Next actions
+
+1. _(next concrete step)_
+
+## Open questions / blocked on
+
+- _(anything waiting on the client, printer, licensing, etc.)_
+
+## Files in flight
+
+| File | State | Notes |
+|---|---|---|
+| _(path)_ | _(draft/proof/approved)_ | |

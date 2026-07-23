@@ -1,0 +1,6 @@
+# CHANGELOG — {{REPO_NAME}}
+
+## {{DATE}}
+
+- Adopted into the Cowork project system (git-sot-bootstrap v{{VERSION}}):
+  standard structure, Git LFS for new binaries, registry entry, recovery docs.

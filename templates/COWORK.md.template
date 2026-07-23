@@ -1,0 +1,50 @@
+# COWORK.md — session discipline for {{REPO_NAME}}
+
+Claude: this file governs how you work in this project. GitHub is the source of
+truth; this folder is a working copy; the server clone is pull-only fallback.
+
+## At session start (in order)
+
+1. Confirm you are in `{{LOCAL_PATH}}` (`pwd`).
+2. Read `.cowork/project.yaml`.
+3. Confirm `git remote get-url origin` = `git@github.com:{{GH_ACCOUNT}}/{{REPO_NAME}}.git`.
+4. `git fetch origin` — then inspect `git status` (uncommitted work) and
+   divergence (`git rev-list --left-right --count @{upstream}...HEAD`).
+5. Read `COWORK.md` (this file), `README.md`, `SESSION_STATE.md`,
+   `DECISIONS.md`, `ASSET_INDEX.md`, `TOOL_MANIFEST.md`.
+6. Read the newest file in `sessions/`.
+7. Check open GitHub Issues (`gh issue list`) and relevant PRs.
+8. Verify critical tools listed in `TOOL_MANIFEST.md`.
+9. Resume from the state documented in `SESSION_STATE.md` — do not ask the
+   user to repeat prior context that is already recorded.
+
+## During the session
+
+- Before moving/renaming any asset, check whether Adobe apps have it open
+  (`osascript -e 'tell application "Adobe Illustrator" to get name of every document'`).
+- Never move files under `assets/linked/` without updating the Adobe links.
+- Use `git mv` for tracked files. Never `git reset --hard`, never force-push.
+- New binaries (.ai/.psd/.indd/.tif/.pdf/.eps) are LFS-tracked via `.gitattributes`.
+- Substantial work → branch + PR. Approved/production states → tag.
+- Track outstanding work as GitHub Issues, not loose notes.
+
+## At session close (in order)
+
+1. Save active files (prompt the user if Adobe documents are open/unsaved).
+2. Move any new assets into the correct project folders.
+3. Update `ASSET_INDEX.md` for anything added/moved.
+4. Record new decisions in `DECISIONS.md`.
+5. Update `SESSION_STATE.md` to describe the exact current state.
+6. Write a session record: `sessions/YYYY-MM-DD-HHMM.md`.
+7. Update GitHub Issues (close finished, open discovered).
+8. `git status` — review everything.
+9. Commit meaningful work with a meaningful message.
+10. `git push`.
+11. Verify: `git rev-list --left-right --count @{upstream}...HEAD` → `0 0`.
+12. Report anything that remains local-only (untracked/uncommitted), explicitly.
+
+## Never
+
+- Commit secrets, `.env` files, or licensed fonts without a license check.
+- Push from the server clone (it is pull-only by design).
+- Delete assets — move them to `quarantine/` and record it.

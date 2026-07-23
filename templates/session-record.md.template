@@ -1,0 +1,22 @@
+# Session — {{DATE}}
+
+## What happened
+
+- _(bullet the substantive work)_
+
+## Decisions made
+
+- _(mirror anything added to DECISIONS.md, or "none")_
+
+## Assets added / moved
+
+- _(mirror ASSET_INDEX.md changes, or "none")_
+
+## State at close
+
+- Commit: _(hash + message)_ · Pushed: _(yes/no + verification)_
+- Local-only remainder: _(explicit list, or "none")_
+
+## Next session should start with
+
+- _(one line)_

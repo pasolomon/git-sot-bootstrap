@@ -1,0 +1,24 @@
+# Cowork project identity — read by Claude Cowork at session start.
+# Managed by git-sot-bootstrap; safe to edit by hand.
+name: {{REPO_NAME}}
+github: {{GH_ACCOUNT}}/{{REPO_NAME}}
+category: {{CATEGORY}}
+local_path: {{LOCAL_PATH}}
+visibility: {{VISIBILITY}}
+status: active
+created: {{DATE}}
+bootstrap_version: {{VERSION}}
+lfs: going-forward          # existing history untouched; new binaries via LFS
+server:
+  host: {{SERVER_USER}}@{{SERVER_HOST}}
+  clone: {{SERVER_CLONE_PATH}}
+  ssh_alias: {{SSH_ALIAS}}
+  role: pull-only-fallback  # never commit or push from the server
+docs:
+  session_state: SESSION_STATE.md
+  decisions: DECISIONS.md
+  assets: ASSET_INDEX.md
+  tools: TOOL_MANIFEST.md
+  changelog: CHANGELOG.md
+  recovery: RECOVERY.md
+  sessions_dir: sessions/

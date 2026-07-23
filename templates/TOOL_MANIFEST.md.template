@@ -1,0 +1,23 @@
+# TOOL_MANIFEST — {{REPO_NAME}}
+
+_What this project needs to be worked on. Verified at session start._
+
+## Required tools
+
+| Tool | Why | Verify with |
+|---|---|---|
+| git + gh CLI (authenticated as {{GH_ACCOUNT}}) | source of truth ops | `gh auth status` |
+| git-lfs | binary assets | `git lfs version` |
+| _(e.g. Adobe Illustrator 2026)_ | | |
+
+## Services / credentials (never stored here — locations only)
+
+| Service | Where credentials live |
+|---|---|
+| _(e.g. printer portal)_ | _(e.g. keychain / 1Password)_ |
+
+## Fonts
+
+| Font | License | Committed? |
+|---|---|---|
+| _(none listed)_ | | no |

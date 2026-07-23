@@ -4,6 +4,11 @@
 .Spotlight-V100
 .Trashes
 
+# Adobe lock/temp files
+*.idlk
+~*.tmp
+*.tmp
+
 # Editors
 .vscode/
 .idea/

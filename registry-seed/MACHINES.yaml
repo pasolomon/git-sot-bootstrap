@@ -1,0 +1,18 @@
+# Machines participating in the source-of-truth system.
+machines:
+  peter-mac:
+    hostname: peter-mac-local
+    os: macOS
+    user: petersolomon
+    role: read-write working clones
+    project_root: ~/Projects
+    notes: gh authenticated as pasolomon; git-lfs required (brew install git-lfs)
+  ubuntu-sumrall:
+    hostname: ubuntu-sumrall
+    address: 192.168.1.253
+    os: Ubuntu
+    user: psolomon
+    role: pull-only fallback clones
+    clone_base: /home/psolomon/docker
+    auth: repo-scoped read-only deploy keys + per-repo SSH aliases (github-<repo>)
+    notes: never commit or push from this machine; push URL disabled on clones

@@ -1,0 +1,4 @@
+# Cowork project registry — managed by git-sot-bootstrap.
+# Each project lives in a managed block:  # >>> key ... # <<< key
+# Do not hand-edit inside blocks unless you know the bootstrap will re-read it.
+projects:

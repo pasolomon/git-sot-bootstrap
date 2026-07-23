@@ -1,0 +1,33 @@
+# RECOVERY — {{REPO_NAME}}
+
+How to get this project back, from scratch, on any machine.
+
+## Fast path (new Mac)
+
+```bash
+# prerequisites: git, gh (authenticated as {{GH_ACCOUNT}}), git-lfs
+brew install gh git-lfs && gh auth login && git lfs install
+git clone git@github.com:{{GH_ACCOUNT}}/git-sot-bootstrap.git ~/Projects/_Tooling/git-sot-bootstrap
+~/Projects/_Tooling/git-sot-bootstrap/bootstrap.sh restore --repo {{REPO_NAME}}
+```
+
+`restore` clones to the registry-recorded path
+(`{{LOCAL_PATH}}`), initializes submodules, and pulls LFS objects.
+
+## Manual path (no bootstrap available)
+
+```bash
+git clone --recurse-submodules git@github.com:{{GH_ACCOUNT}}/{{REPO_NAME}}.git "{{LOCAL_PATH}}"
+cd "{{LOCAL_PATH}}" && git lfs pull
+```
+
+## Fallback if GitHub is unreachable
+
+A pull-only clone lives on the server: `{{SERVER_CLONE_PATH}}`
+(`{{SERVER_USER}}@{{SERVER_HOST}}`, SSH alias `{{SSH_ALIAS}}`).
+Copy it off the server; do NOT commit or push from it.
+
+## What is NOT in git (disclose here)
+
+- _(List anything local-only: oversized files, licensed fonts, secrets and
+  where they actually live. If this list is empty, say so explicitly.)_

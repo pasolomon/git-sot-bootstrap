@@ -1,0 +1,24 @@
+# ASSET_INDEX — {{REPO_NAME}}
+
+_Every meaningful asset, its role, provenance, and SHA-256. Update when assets
+are added, moved, approved, or superseded._
+
+## Classification key
+
+`canonical` · `active-working` · `source-asset` · `approved-deliverable` ·
+`superseded-useful` · `duplicate` · `generated` · `quarantined` · `restricted`
+
+## Index
+
+| Path | Class | SHA-256 (first 12) | Provenance / notes |
+|---|---|---|---|
+| _(none indexed yet)_ | | | |
+
+## Adobe link map
+
+_Illustrator/InDesign documents and the external files they link. Never move a
+linked file without updating the document._
+
+| Document | Links to |
+|---|---|
+| _(none mapped yet)_ | |

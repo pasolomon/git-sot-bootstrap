@@ -1,0 +1,28 @@
+# Migration — {{PROJECT}} — {{DATE}}
+
+## Scope
+
+- Source location(s):
+- Target repo / path:
+
+## Inventory summary
+
+- Files classified: N (canonical / active / source / approved / superseded /
+  duplicate / temporary / generated / orphaned / restricted)
+- Exact duplicates found (by SHA-256): N
+
+## Actions taken
+
+-
+
+## Verification
+
+- [ ] GitHub files present
+- [ ] LFS objects pushed and pulled back
+- [ ] Server clone pulled
+- [ ] Restore test into temp location
+- [ ] Adobe links intact
+
+## Remaining local-only files
+
+-
