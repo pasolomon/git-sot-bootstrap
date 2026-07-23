@@ -695,7 +695,7 @@ restore_one() {
   if [ "$DRY_RUN" -eq 1 ]; then step "restore $key" created "(dry-run) would clone $gh_path → $lp"; return 0; fi
   mkdir -p "$(dirname "$lp")"
   git clone -q --recurse-submodules "git@github.com:${gh_path}.git" "$lp"
-  if git lfs version >/dev/null 2>&1; then git -C "$lp" lfs pull -q 2>/dev/null || true; fi
+  if git lfs version >/dev/null 2>&1; then git -C "$lp" lfs pull >/dev/null 2>&1 || true; fi
   step "restore $key" created "$lp (submodules + LFS pulled)"
 }
 
@@ -726,7 +726,7 @@ validate_one() {
            ASSET_INDEX.md TOOL_MANIFEST.md CHANGELOG.md RECOVERY.md .gitattributes; do
     [ -e "$rp/$f" ] || tmpl_missing="$tmpl_missing $f"
   done
-  local junk; junk=$(find "$rp" -name '.DS_Store' -o -name '._*' -o -name '*.idlk' 2>/dev/null | grep -v '/.git/' | wc -l | tr -d ' ')
+  local junk; junk=$(find "$rp" \( -name '.DS_Store' -o -name '._*' -o -name '*.idlk' \) -not -path '*/.git/*' 2>/dev/null | wc -l | tr -d ' ')
   local lfsattr="no"; [ -f "$rp/.gitattributes" ] && grep -q 'filter=lfs' "$rp/.gitattributes" && lfsattr="yes"
   local reg="no"; [ -n "$(registry_get "$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')" github)" ] && reg="yes"
   printf '| %s | %s | %s | %s | %s | %s | %s | %s |\n' \
