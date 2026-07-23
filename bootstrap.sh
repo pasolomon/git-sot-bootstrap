@@ -728,7 +728,10 @@ validate_one() {
   done
   local junk; junk=$(find "$rp" \( -name '.DS_Store' -o -name '._*' -o -name '*.idlk' \) -not -path '*/.git/*' 2>/dev/null | wc -l | tr -d ' ')
   local lfsattr="no"; [ -f "$rp/.gitattributes" ] && grep -q 'filter=lfs' "$rp/.gitattributes" && lfsattr="yes"
-  local reg="no"; [ -n "$(registry_get "$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')" github)" ] && reg="yes"
+  local reg="no" regkey
+  regkey=$(printf '%s' "$remote" | sed -E 's|.*[:/]([^/]+)\.git$|\1|' | tr '[:upper:]' '[:lower:]')
+  [ -z "$regkey" ] && regkey=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')
+  [ -n "$(registry_get "$regkey" github)" ] && reg="yes"
   printf '| %s | %s | %s | %s | %s | %s | %s | %s |\n' \
     "${rp/#$PROJECT_ROOT\//}" "$remote" "$dirty" "$ab" \
     "$( [ -z "$tmpl_missing" ] && echo complete || echo "missing:$(echo "$tmpl_missing" | wc -w | tr -d ' ')" )" \
