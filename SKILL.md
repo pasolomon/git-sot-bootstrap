@@ -1,102 +1,103 @@
 ---
-name: source-of-truth-bootstrap
-description: Use this skill whenever the user wants to set up version control + GitHub as the canonical source of truth for a project's documentation/state files, with a Mac working clone and a server pull-only fallback. Triggers include "set up source of truth", "git-ify this project", "make this a GitHub repo", "version control my runbook/state/configs", "do what we did for the homelab but for X", "bootstrap a new project repo", or any request to standardize this pattern across a new system. Particularly relevant when the user already has canonical documentation files (runbook, state JSON, changelog, configs) sitting on a server or Mac that should move into git.
+name: cowork-project-system
+description: Drives Peter's Cowork project source-of-truth system (git-sot-bootstrap v2). Trigger whenever Peter asks to open a project, resume project work, start a new project, migrate a project, restore projects onto a machine, clean a project, save/close the session, prepare work for another computer, find prior project decisions, or find project assets. Also trigger on "pick up where we left off", "what were we doing on X", "new client project", "adopt this folder", "is everything pushed", or any mention of ~/Projects project lifecycle. GitHub (account pasolomon) is the durable source of truth; ~/Projects holds working clones; ubuntu-sumrall holds pull-only fallback clones.
 ---
 
-# Source of Truth Bootstrap
+# Cowork Project System
 
-Automates the pattern of standing up a private (or public) GitHub repo as the source of truth for a project, with a Mac working clone and a server pull-only fallback clone authenticated by a repo-scoped read-only deploy key.
+Projects live under `~/Projects` (categories → repos). The registry
+`pasolomon/cowork-project-registry` (clone: `~/Projects/_registry`,
+`PROJECTS.yaml`) maps every project. The tooling is
+`~/Projects/_Tooling/git-sot-bootstrap/bootstrap.sh`:
 
-## When to invoke
-
-Trigger when the user wants to:
-
-- Set up GitHub version control for a project's canonical files
-- Standardize the source-of-truth pattern across multiple systems
-- "Do what we did for X but for Y" (where X used this same pattern)
-- Migrate canonical files off a server into git for backup + version history
-- Set up a new project that should follow the established homelab pattern
-
-## What this skill knows
-
-The user has a script at `https://github.com/pasolomon/git-sot-bootstrap` that automates the entire bootstrap. The script:
-
-1. Creates a private/public GitHub repo
-2. Initializes a Mac working clone with templated README + `.gitignore`
-3. Pushes the initial commit
-4. Generates an ed25519 deploy key on the target server
-5. Registers it as **read-only, repo-scoped** (this is critical — not account-level)
-6. Adds a per-repo SSH `Host` alias on the server so multiple repos coexist
-7. Clones to the server using that alias
-8. Verifies end-to-end
-
-## How to use
-
-### Step 1 — Confirm the parameters with the user
-
-Required:
-- **Repo name** (will become both GitHub repo name and local directory name)
-
-Defaults that should be confirmed (or overridden):
-- Server host (default `192.168.1.253`)
-- Server user (default `psolomon`)
-- Mac clone base path (default `$HOME`, so final path = `~/REPO_NAME`)
-- Server clone base path (default `/home/USER/docker`)
-- Visibility (default `private`)
-- Description (default `Source of truth for REPO`)
-
-Confirm all relevant defaults before running. If the user is bootstrapping for a different server or non-homelab system, the defaults likely need to change.
-
-### Step 2 — Ensure the bootstrap script is available locally
-
-Either clone the repo:
-```bash
-git clone https://github.com/pasolomon/git-sot-bootstrap.git /tmp/git-sot-bootstrap
+```
+new --repo NAME [--category CAT]   adopt --path PATH --repo NAME
+migrate --all [--dry-run]          restore --repo NAME | --active
+validate --all | --repo NAME       repair --repo NAME
 ```
 
-Or `cd` to an existing checkout if the user already has one.
+All modes are idempotent and log to `~/.local/state/git-sot-bootstrap/`.
+Never use `git reset --hard`, force-push, or history rewrites. Never commit
+secrets or unlicensed fonts. Never push from the server clone.
 
-### Step 3 — Run the script
+## Identify the project
+
+1. Match what Peter said against `~/Projects/_registry/PROJECTS.yaml` keys,
+   then against `~/Projects/*/` folder names, then `README`s. Ask only if
+   genuinely ambiguous.
+2. `cd` to the project's `local_path`.
+
+## Project startup (run in order, silently)
+
+1. Confirm the working directory (`pwd` = the project's local_path).
+2. Read `.cowork/project.yaml`.
+3. Confirm `git remote get-url origin` matches the yaml's github entry.
+4. `git fetch origin`.
+5. Inspect uncommitted changes (`git status --porcelain`).
+6. Detect divergence (`git rev-list --left-right --count @{upstream}...HEAD`).
+   Diverged? Stop and tell Peter — do not auto-merge, never reset/force.
+7. Read `COWORK.md` (project-specific discipline — it wins on conflicts).
+8. Read `README.md`.
+9. Read `SESSION_STATE.md`.
+10. Read `DECISIONS.md`.
+11. Read `ASSET_INDEX.md`.
+12. Read `TOOL_MANIFEST.md`.
+13. Read the newest file in `sessions/`.
+14. `gh issue list` (open Issues) + relevant PRs (`gh pr list`).
+15. Verify critical tools from TOOL_MANIFEST (git-lfs, Adobe apps as needed).
+16. Resume from the documented state. Do NOT ask Peter to repeat anything
+    already recorded in these files.
+
+## Adobe safety (before ANY file move/rename)
 
 ```bash
-cd /tmp/git-sot-bootstrap
-./bootstrap.sh --repo NAME [--server HOST] [--user USER] [--visibility public|private] [other options]
+osascript -e 'tell application "System Events" to (name of processes) contains "Adobe Illustrator"'
+osascript -e 'tell application "Adobe Illustrator" to get name of every document'
 ```
 
-The script will print a summary and ask for confirmation before making changes. Pass `--no-confirm` only if the user has already confirmed in chat.
+Open documents = do not move their files or anything they might link. Same
+check for Photoshop/InDesign. Never move files under `assets/linked/` without
+relinking. Run the project's link scan (e.g. JL-Soaps `scripts/linkscan.py`)
+after any asset reorganization.
 
-### Step 4 — Verify success
+## Session close ("save the session", "wrap up", end of work)
 
-The script prints a final summary on success. Confirm with the user that:
-- The GitHub repo URL is reachable
-- The Mac clone has the templated files
-- A `git pull` on the server returns "Already up to date"
+1. Save active files (if Adobe apps have unsaved docs, prompt Peter to save).
+2. Move new assets into the correct project folders (Adobe check first).
+3. Update `ASSET_INDEX.md` for anything added/moved (with SHA-256).
+4. Record new decisions in `DECISIONS.md`.
+5. Update `SESSION_STATE.md` to the exact current state.
+6. Create `sessions/YYYY-MM-DD-HHMM.md` from the session-record template.
+7. Update GitHub Issues (close done, open discovered).
+8. Review `git status` in the project AND its submodules.
+9. Commit meaningful work — meaningful messages, no `final-final-v2` naming.
+10. `git push` (submodules first, then bump pointers in the umbrella).
+11. Verify: `git rev-list --left-right --count @{upstream}...HEAD` → `0 0`,
+    and `git lfs ls-files` uploads completed.
+12. Report anything remaining local-only, explicitly (cross-check the
+    project's `RECOVERY.md` disclosure list and update it).
 
-### Step 5 — Next steps after bootstrap
+## Lifecycle requests
 
-The bootstrap creates an *empty* repo (just README + `.gitignore`). The user almost certainly wants to:
+- **Start/new project** → `bootstrap.sh new --repo NAME [--category CAT]`
+  (private by default; confirm name/category with Peter first).
+- **Adopt existing folder** → `bootstrap.sh adopt --path PATH --repo NAME`.
+- **Migrate everything** → `migrate --all --dry-run`, show Peter the report,
+  get approval, then `migrate --all`.
+- **Restore on this/another computer** → `restore --repo NAME` or
+  `restore --active` (reads the registry; see registry `RESTORE.md`).
+- **Clean a project** → follow the Phase-6 pattern: safe deletions only
+  (OS metadata, lock files, empty dirs, zero-byte, verified exact dupes),
+  archive meaningful versions, quarantine anything uncertain, write a
+  quarantine report, surface uncertain items to Peter. Never delete client
+  assets, masters, approved artwork, production files, dielines, licensing
+  records, linked assets, or sole copies.
+- **Find decisions** → `DECISIONS.md` (+ product SourceOfTruth docs listed
+  there); **find assets** → `ASSET_INDEX.md`, then `git log --follow`.
+- **Health check** → `bootstrap.sh validate --all` and read the report.
 
-1. Add their actual canonical files (state JSON, runbook, changelog, configs)
-2. Update README to describe what's tracked in *this* particular repo
-3. Commit and push from Mac, pull on server
+## GitHub standards
 
-Offer to do these steps if the user has source files in mind.
-
-## Critical correctness checks
-
-- **The deploy key must be repo-scoped, not account-level.** The script verifies this by checking that `ssh -T <alias>` responds `Hi USER/REPO!` (with the `/REPO` suffix). If it responds with just `Hi USER!`, the key was added at the account level — which gives the server access to *every* repo the account can reach. The script will detect this and abort.
-
-- **Per-repo SSH aliases are mandatory.** Using a generic `Host github.com` block breaks when a second repo is bootstrapped on the same server. The script always uses `Host github-REPO_NAME`.
-
-- **The server clone is pull-only by design.** The deploy key is read-only, so pushes from the server would be rejected anyway. Never instruct the user to `git commit` or `git push` from the server.
-
-## What this skill does NOT do
-
-- Does not migrate existing source-of-truth setups to the alias pattern. If the user has an old setup (e.g., a single `Host github.com` block from before this script existed), suggest a separate manual refactor — don't try to do it as part of bootstrapping a new repo.
-- Does not delete or undo. If something goes wrong, walk the user through manual cleanup; the script has no `--undo`.
-- Does not handle non-default Git providers (GitLab, Gitea, self-hosted Git). Tied to GitHub via `gh` CLI.
-
-## Reference
-
-- Source: https://github.com/pasolomon/git-sot-bootstrap
-- Original pattern (the homelab implementation): https://github.com/pasolomon/homelab-source-of-truth
+Issues for outstanding work/missing assets/client changes/printer questions.
+Branches + PRs for substantial or structural work. Milestones for phases.
+Tags/releases for approved and production-ready states. `main` = stable.
