@@ -20,8 +20,33 @@ truth; this folder is a working copy; the server clone is pull-only fallback.
 
 ## During the session
 
-- Before moving/renaming any asset, check whether Adobe apps have it open
-  (`osascript -e 'tell application "Adobe Illustrator" to get name of every document'`).
+- Before moving/renaming any asset, check whether Adobe apps have it open. Do
+  this with a JSX probe (see "Adobe automation" below), or just `pgrep -lf` the
+  app and ask the user. **Do not use AppleScript/`osascript` for this.**
+
+### Adobe automation — JSX only, never AppleScript
+
+- **Never** drive Adobe apps with AppleScript (`osascript`, `tell application
+  ... to do javascript`). The bridge is legacy and **crashes Illustrator 2026**
+  — it took the app down three times in one session on 2026-08-09.
+- **Always** write ExtendScript (`.jsx`) and run it by opening the file with
+  the app:
+  ```bash
+  open -a "/Applications/Adobe Illustrator 2026/Adobe Illustrator.app" script.jsx
+  ```
+- Scripts must **write their own log file** and be re-read from disk. Do not
+  rely on a return value coming back over an Apple Event.
+- Illustrator → Settings → General → **"Allow Scripts to Write Files and Access
+  Network"** must be ON, or scripts hang silently on a permission prompt.
+- To remove the per-run approval dialog, install the script into the app's
+  Scripts menu (needs `sudo`; note `Presets.localized`, not `Presets`):
+  `/Applications/Adobe Illustrator <ver>/Presets.localized/en_US/Scripts/`
+- ExtendScript is **not** deprecated for Illustrator — UXP has no public API as
+  of 2026. JSX is the correct long-term choice, not a stopgap.
+- `exportFile` cannot write to `/tmp`; export into the project folder.
+- `TextFrame.visibleBounds` is the ascender-to-descender line box, **not** glyph
+  ink. To fit type to a measured size, outline a throwaway duplicate and measure
+  that, or the result will be roughly half the intended size.
 - Never move files under `assets/linked/` without updating the Adobe links.
 - Use `git mv` for tracked files. Never `git reset --hard`, never force-push.
 - New binaries (.ai/.psd/.indd/.tif/.pdf/.eps) are LFS-tracked via `.gitattributes`.
